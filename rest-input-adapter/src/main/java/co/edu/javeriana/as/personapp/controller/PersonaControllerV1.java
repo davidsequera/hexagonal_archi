@@ -4,13 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import co.edu.javeriana.as.personapp.adapter.PersonaInputAdapterRest;
 import co.edu.javeriana.as.personapp.common.exceptions.InvalidOptionException;
@@ -39,4 +33,19 @@ public class PersonaControllerV1 {
 		log.info("esta en el metodo crearTarea en el controller del api");
 		return personaInputAdapterRest.crearPersona(request);
 	}
+
+	@ResponseBody
+	@PutMapping(path = "/{databse}/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public PersonaResponse actualizarPersona(@PathVariable Integer id, @RequestBody PersonaRequest request) {
+		log.info("Updating persona with ID: {}", id);
+		return personaInputAdapterRest.actualizarPersona(id, request);
+	}
+
+	@ResponseBody
+	@DeleteMapping(path = "/{databse}/{id}/", produces = MediaType.APPLICATION_JSON_VALUE)
+	public void eliminarPersona(@PathVariable Integer id, @PathVariable String databse) {
+		log.info("Deleting persona with ID: {}", id);
+		personaInputAdapterRest.eliminarPersona(id);
+	}
+
 }

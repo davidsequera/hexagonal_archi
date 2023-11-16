@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -19,6 +20,8 @@ import co.edu.javeriana.as.personapp.mapper.PersonaMapperRest;
 import co.edu.javeriana.as.personapp.model.request.PersonaRequest;
 import co.edu.javeriana.as.personapp.model.response.PersonaResponse;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.persistence.criteria.CriteriaBuilder;
 
 @Slf4j
 @Adapter
@@ -77,5 +80,29 @@ public class PersonaInputAdapterRest {
 		}
 		return null;
 	}
+	public PersonaResponse actualizarPersona(Integer id, PersonaRequest request) {
+		try {
+			setPersonOutputPortInjection(request.getDatabase());
+			Person updatedPerson = personInputPort.edit(id, personaMapperRest.fromAdapterToDomain(request));
+			return personaMapperRest.fromDomainToAdapterRestMaria(updatedPerson);
+		} catch (InvalidOptionException e) {
+			log.warn(e.getMessage());
+			return null; // Handle this according to your application logic
+		} catch (NoExistException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void eliminarPersona(Integer id) {
+		try {
+			personInputPort.drop(id);
+			log.info("Persona with ID: {} deleted successfully.", id);
+		} catch (NoExistException e) {
+			log.warn(e.getMessage());
+			// Handle this according to your application logic or throw an exception
+		}
+	}
+
+
 
 }
